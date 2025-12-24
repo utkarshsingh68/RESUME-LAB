@@ -100,7 +100,7 @@ def test_jsearch():
         print(f"   Saved to: {fetcher.data_path}")
         
         # Show saved jobs count
-        with open(fetcher.data_path, 'r') as f:
+        with open(fetcher.data_path, 'r', encoding='utf-8', errors='replace') as f:
             all_jobs = json.load(f)
         print(f"   Total jobs in database: {len(all_jobs)}")
     else:

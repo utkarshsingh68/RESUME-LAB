@@ -2633,5 +2633,282 @@
     "posted_at": "2025-12-13T16:00:14+00:00",
     "salary": 0,
     "source": "RemoteOK"
+  },
+  {
+    "id": "jsearch--tRIWrtAo2x0JVKGAAAAAA==",
+    "title": "Senior Software Engineer - US Department of Defense",
+    "role": "Software Engineer",
+    "company": "McKinsey & Company",
+    "location": null,
+    "employment_type": "Full-time",
+    "experience_level": "Senior",
+    "experience_required": 5,
+    "skills": [
+      "python",
+      "java",
+      "typescript",
+      "react",
+      "node.js",
+      "fastapi",
+      "sql",
+      "docker",
+      "kubernetes",
+      "aws"
+    ],
+    "description": "Your Growth Driving lasting impact and building long-term capabilities with our clients is not easy work. You are the kind of person who thrives in a high performance/high reward culture - doing hard things, picking yourself up when you stumble, and having the resilience to try another way forward.\n\nIn return for your drive, determination, and curiosity, we'll provide the resources, mentorship, and opportunities you need to become a stronger leader faster than you ever thought possible. Your colleagues—at all levels—will invest deeply in your development, just as much as they invest in delivering exceptional results for clients. Every day, you'll receive apprenticeship, coaching, and exposure that will accelerate your growth in ways you won’t find anywhere else.\n\nWhen you join us, you will have:\n• Continuous learning: Our learning and apprenticeship culture, backed by structured programs, is all about helping you grow while creating an environment where feedback is clear, actionable, a",
+    "highlights": [
+      "Full-time position"
+    ],
+    "apply_url": "https://www.mckinsey.com/careers/search-jobs/jobs/seniorsoftwareengineer-usdepartmentofdefense-100401?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+    "posted_at": null,
+    "salary": 0,
+    "source": "JSearch (McKinsey)"
+  },
+  {
+    "id": "jsearch-kpRd1qaRFoIVY_MuAAAAAA==",
+    "title": "Software Engineer (Tactical Decision Aids – Production & Integration)",
+    "role": "Software Engineer",
+    "company": "Leidos",
+    "location": null,
+    "employment_type": "Full-time",
+    "experience_level": "Mid-Level",
+    "experience_required": 3,
+    "skills": [
+      "java",
+      "angular",
+      "express",
+      "aws",
+      "git",
+      "agile",
+      "rest",
+      "ai",
+      "rust",
+      "c++"
+    ],
+    "description": "Description\n\nLeidos’ High Fidelity Simulation Business Area designs and delivers cutting-edge system-of-systems solutions that power world-class simulation, training, and analysis products for the U.S. Navy.\n\nIn this role, based at a U.S. Government facility in Bethesda, MD, you will work with state-of-the-art technologies to develop advanced sonar tactical decision aids (TDAs) that directly support the Fleet. You’ll be part of a high-performing team whose mission-critical work shapes the Navy’s tactical edge—making a tangible impact on national security.\n\nAt Leidos, we empower our engineers to do meaningful work while continually building new skills to grow the career they want to achieve.\n\nWhat You’ll Work On\n• Develop and enhance Tactical Signature Guidance (TSG) systems, including sonar TDAs across multiple code baselines.\n• Troubleshoot and resolve complex software challenges while contributing innovative solutions.\n• Learn and apply new programming languages and technologies, wit",
+    "highlights": [
+      "Full-time position"
+    ],
+    "apply_url": "https://careers.leidos.com/jobs/17165203-software-engineer-tactical-decision-aids-production-and-integration?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+    "posted_at": "2025-12-22T00:00:00.000Z",
+    "salary": 0,
+    "source": "JSearch (Leidos Careers)"
+  },
+  {
+    "id": "jsearch-f5ZQxudS9AVDZf6MAAAAAA==",
+    "title": "Software Engineer - Mobile",
+    "role": "Mobile",
+    "company": "Verdance",
+    "location": null,
+    "employment_type": "Full-time",
+    "experience_level": "Mid-Level",
+    "experience_required": 3,
+    "skills": [
+      "python",
+      "java",
+      "javascript",
+      "git",
+      "ci/cd",
+      "rest",
+      "ai",
+      "rust"
+    ],
+    "description": "Join Verdance and help improve government digital services!\n\nAbout the role\nYou’ll join a growing company working with a variety of government agencies to build high-quality digital public services. Your initial project placement will be with a Congressional customer, working on a mobile app & backend that staff, journalists, and members of the public use to track Congressional activity in real time. This role will require some on-site availability as needed (likely an average of 1x a week), so living within a reasonable commute of the Capitol area is a must.\n\nThis role is contingent on a final government project award decision— which is expected in January.\n\nHere are our must-have priorities for this role:\n• 5+ years of software engineering experience\n• Substantial mobile development experience, ideally in the Flutter/Dart environment\n• Substantial backend engineering experience\n• Strong comfort with JavaScript or Python, and the ability to pick up new tools and languages as needed\n• ",
+    "highlights": [
+      "Full-time position",
+      "$145,000 - $173,000"
+    ],
+    "apply_url": "https://www.indeed.com/viewjob?jk=889a928f7deb640d&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+    "posted_at": "2025-12-18T00:00:00.000Z",
+    "salary": 159000,
+    "source": "JSearch (Indeed)"
+  },
+  {
+    "id": "jsearch-HrqcbVkz8dlP04E_AAAAAA==",
+    "title": "Software Engineer, Gov",
+    "role": "Software Engineer",
+    "company": "OpenAI",
+    "location": null,
+    "employment_type": "Full-time",
+    "experience_level": "Mid-Level",
+    "experience_required": 3,
+    "skills": [
+      "python",
+      "java",
+      "javascript",
+      "react",
+      "kubernetes",
+      "aws",
+      "rest",
+      "ai",
+      "rust"
+    ],
+    "description": "About the Team\n\nJoin the engineering teams that bring OpenAI’s ideas safely to the world!\n\nThe Applied Engineering team works across research, engineering, product, and design to bring OpenAI’s technology to consumers and businesses. We seek to learn from deployment and distribute the benefits of AI, while ensuring that this powerful tool is used responsibly and safely. Safety is more important to us than unfettered growth.\n\nAbout the Role\n\nWe’re seeking Software Engineers who can solve complex, high-impact problems across our stack. In this role, you’ll join a nimble team driving the deployment of OpenAI’s technology into new environments and infrastructure that power critical missions in the public sector.\n\nYou’ll work cross-functionally with product, security, and compliance teams to build the functionality needed to deliver a scalable, reliable platform. You’ll also partner directly with customers to design and build new products and features that create real-world impact.\n\nFrom la",
+    "highlights": [
+      "Full-time position",
+      "$255,000 - $405,000"
+    ],
+    "apply_url": "https://www.indeed.com/viewjob?jk=99c8829f1b8bb504&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+    "posted_at": null,
+    "salary": 330000,
+    "source": "JSearch (Indeed)"
+  },
+  {
+    "id": "jsearch-iDKvQbAtMH_Wg1BpAAAAAA==",
+    "title": "Software Engineer",
+    "role": "Software Engineer",
+    "company": "Leidos",
+    "location": null,
+    "employment_type": "Full-time",
+    "experience_level": "Mid-Level",
+    "experience_required": 3,
+    "skills": [
+      "express",
+      "aws",
+      "git",
+      "scrum",
+      "rest",
+      "ai",
+      "c++"
+    ],
+    "description": "Description\n\nWe are seeking an experienced Lead Software Engineer to join our team in developing unmanned and autonomous ships for the US Government. The candidate will help design, code, and test software as part of a Scrum team in Arlington, VA, and will assist in coaching and mentoring junior and mid-level developers. Joining other senior developers, the candidate will help to guide projects of significant national importance. Our team of over thirty developers supports a variety of projects, making existing ships operate autonomously as well as working to support new ships through development within design, build, and test phases. Our software handles ship automation, autonomous navigation, sensor processing, and communications. The team also develops simulations to be used for verification and software testing.\n\nPrimary Responsibilities\n• Design, develop, and debug mission critical software source code.\n• Participate in the full software development lifecycle\n• Serve as technical ",
+    "highlights": [
+      "Full-time position"
+    ],
+    "apply_url": "https://careers.leidos.com/jobs/16399921-software-engineer?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+    "posted_at": "2025-12-10T00:00:00.000Z",
+    "salary": 0,
+    "source": "JSearch (Leidos Careers)"
+  },
+  {
+    "id": "jsearch-Gsc-A9BAOCEGUxbQAAAAAA==",
+    "title": "Gen AI/ML Developer (Washington)",
+    "role": "Software Engineer",
+    "company": "Mindlance",
+    "location": null,
+    "employment_type": "Part-time",
+    "experience_level": "Mid-Level",
+    "experience_required": 3,
+    "skills": [
+      "sql",
+      "azure",
+      "ai"
+    ],
+    "description": "Title: GenAI/ML Developer\n\nDuration: 7 Months - Long Term\n\nLocation: Washington, DC 20433\n\nHybrid Onsite: 4 Days onsite per week from Day1\n\nKey Responsibilities:\nClient is looking for GenAI Developer who has expertise experience in developing AI/ML Models , LLM Models etc. Need expertise in chatbot technologies and OpenAI GPT models, specifically prompt engineering, Retrieval-Augmented Generation (RAG) and fine tuning. Had open-source projects, particularly those related to language models like Lang Chain. In-depth knowledge of Azure cloud services, including Azure AD, Azure Search, Azure SQL, Cosmos DB, Azure OpenAI, and Azure Cognitive Services. Familiarity with chatbot technologies and OpenAI models.\n\nMindlance is an Equal Opportunity Employer and does not discriminate in employment on the basis of Minority/Gender/Disability/Religion/LGBTQI/Age/Veterans.",
+    "highlights": [
+      "Part-time position"
+    ],
+    "apply_url": "https://www.whatjobs.com/jobs/software-engineer?id=2353313296&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+    "posted_at": "2025-12-23T00:00:00.000Z",
+    "salary": 0,
+    "source": "JSearch (WhatJobs)"
+  },
+  {
+    "id": "jsearch-byhEdOw6CYrTet0QAAAAAA==",
+    "title": "Software Engineer - Data Classification",
+    "role": "Software Engineer",
+    "company": "Booking.com",
+    "location": null,
+    "employment_type": "Full-time",
+    "experience_level": "Mid-Level",
+    "experience_required": 3,
+    "skills": [
+      "python",
+      "java",
+      "express",
+      "machine learning",
+      "ai"
+    ],
+    "description": "About us: At Booking.com, data drives our decisions. Technology is at our core. And innovation is everywhere. But our company is more than datasets, lines of code or A/B tests. We’re the thrill of the first night in a new place. The excitement of the next morning. The friends you encounter. The journeys you take. The sights you see. And the memories you make. Through our products, partners and people, we make it easier for everyone to experience the world\n\nAbout the team: Booking.com (USA), Inc, one of the support companies in the United States, is seeking a full time Software Engineer in Washington, DC for the Data Production & Compliance track of the Data and Machine Learning department. The teams in our track engineer the automation behind Booking’s Data Governance and Compliance ecosystem. We build scalable solutions to discover and classify assets (including ML/AI), enforce data protection policies, and provide Legal and Compliance stakeholders with real-time visibility into the c",
+    "highlights": [
+      "Full-time position"
+    ],
+    "apply_url": "https://www.ziprecruiter.com/c/Booking.com/Job/Software-Engineer-Data-Classification/-in-Washington,DC?jid=cf9ece25b370449d&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+    "posted_at": "2025-12-17T00:00:00.000Z",
+    "salary": 0,
+    "source": "JSearch (ZipRecruiter)"
+  },
+  {
+    "id": "jsearch-92S6WyKB2qeZdnoiAAAAAA==",
+    "title": "Backend Software Engineer",
+    "role": "Backend",
+    "company": "Guardian RF",
+    "location": null,
+    "employment_type": "Full-time",
+    "experience_level": "Mid-Level",
+    "experience_required": 3,
+    "skills": [
+      "ai"
+    ],
+    "description": "Guardian RF is building next-generation drone detection systems to protect critical infrastructure, national security, and public safety. Our passive RF-based platform provides real-time situational awareness by detecting both compliant and non-compliant drones and integrating directly with security and law enforcement systems.\n\nThis role is primarily a full-time, in-person position based in Washington, DC, where close collaboration with our RF engineers and hardware team is essential. That said, we will consider strong candidates for remote work depending on experience and fit.\n\nAs a backend engineer, you’ll design and build scalable services to process large volumes of RF data, develop APIs for integrations, and help shape the foundation of our distributed system. You’ll work closely with RF engineers, data scientists, and front-end developers to deliver mission-critical technology that has real-world impact.",
+    "highlights": [
+      "Full-time position",
+      "$80,000 - $120,000"
+    ],
+    "apply_url": "https://www.linkedin.com/jobs/view/backend-software-engineer-at-guardian-rf-4287595103?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+    "posted_at": null,
+    "salary": 100000,
+    "source": "JSearch (LinkedIn)"
+  },
+  {
+    "id": "jsearch-RpiHfP6NUg--H46nAAAAAA==",
+    "title": "Senior Software Engineer (Generative AI)",
+    "role": "Software Engineer",
+    "company": "Freddie Mac",
+    "location": null,
+    "employment_type": "Full-time",
+    "experience_level": "Senior",
+    "experience_required": 5,
+    "skills": [
+      "python",
+      "express",
+      "kubernetes",
+      "aws",
+      "ci/cd",
+      "agile",
+      "rest",
+      "microservices",
+      "machine learning",
+      "ai"
+    ],
+    "description": "At Freddie Mac, our mission of Making Home Possible is what motivates us, and it’s at the core of everything we do. Since our charter in 1970, we have made home possible for more than 90 million families across the country. Continue your career journey where your work contributes to a greater purpose.\n\nPosition Overview:\n\nWe are seeking a highly experienced hands-on Agile Development Senior Software Engineer (Gen AI) to lead the design and development of cutting-edge Generative AI (Gen AI) Agents, Agentic Workflows, and Gen AI Applications that solve complex business problems. This role requires advanced proficiency in Python-based microservices for the orchestration layer deployed to AWS EKS (Kubernetes). You will serve as a hands-on engineer, working alongside Gen AI scientists, product managers, and data engineers to shape and implement enterprise-grade Gen AI solutions. A strong focus on DevOps and automated testing using Gen AI is essential for success in this role.\n\nKey Responsib",
+    "highlights": [
+      "Full-time position"
+    ],
+    "apply_url": "https://careers.freddiemac.com/us/en/job/JR16290/Senior-Software-Engineer-Generative-AI?utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+    "posted_at": "2025-12-23T00:00:00.000Z",
+    "salary": 0,
+    "source": "JSearch (Freddie Mac Careers)"
+  },
+  {
+    "id": "jsearch-bEXtRfwMsU0SnTj2AAAAAA==",
+    "title": "Software Engineer III - Backend",
+    "role": "Backend",
+    "company": "Walmart",
+    "location": null,
+    "employment_type": "Full-time and Part-time",
+    "experience_level": "Mid-Level",
+    "experience_required": 3,
+    "skills": [
+      "python",
+      "java",
+      "sql",
+      "aws",
+      "git",
+      "ci/cd",
+      "agile",
+      "rest",
+      "microservices",
+      "ai"
+    ],
+    "description": "Position Summary...\n\nWhat you'll do... As a part of Walmart Global Tech, you’ll build industry defining reusable customer and partner facing services and products to lead differentiated experiences and revenue. You will be in the unique position to be of service to both our customers (1P as well as 3P) and our associates as a member of this organization supporting all segments of Walmart. If you are the type of person who feels a personal stake in everything that you work on, has a love for data, enjoys solving complex problems, has a passion for privacy, knows how to foster strong relationships and build trust, and works for the success of the entire team.\n\nAbout Team:\nOur team works closely with our US stores and eCommerce business to better serve customers by empowering team members, stores, and merchants with technological innovation. From groceries and entertainment to sporting goods and crafts, Walmart U.S. offers an extensive selection that our customers value, whether they shop",
+    "highlights": [
+      "Full-time and Part-time position",
+      "$108,000 - $216,000"
+    ],
+    "apply_url": "https://www.ziprecruiter.com/c/Walmart/Job/Software-Engineer-III-Backend/-in-Washington,DC?jid=84a35a92c0b1791d&utm_campaign=google_jobs_apply&utm_source=google_jobs_apply&utm_medium=organic",
+    "posted_at": "2025-12-21T00:00:00.000Z",
+    "salary": 162000,
+    "source": "JSearch (ZipRecruiter)"
   }
 ]

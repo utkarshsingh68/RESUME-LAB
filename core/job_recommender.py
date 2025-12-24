@@ -117,7 +117,9 @@ class JobRecommender:
         for idx in filtered_indices:
             job = self.jobs[idx]
             metrics = self._score_job(job, self.normalized_job_embeddings[idx], resume_profile)
-            recommendations.append((metrics["match_percentage"], {**job, **metrics}))
+            job_data = {**job, **metrics}
+            self._ensure_required_fields(job_data, fallback_id=str(idx))
+            recommendations.append((job_data["match_percentage"], job_data))
 
         recommendations.sort(key=lambda item: item[0], reverse=True)
         
@@ -130,9 +132,54 @@ class JobRecommender:
             else:
                 # Use simple explanation for remaining jobs
                 job_data['explanation'] = self._simple_explanation(job_data)
+                self._coerce_metric_types(job_data)
                 top_results.append(job_data)
         
         return top_results
+
+    @staticmethod
+    def _ensure_required_fields(job_data: Dict, fallback_id: str) -> None:
+        """Make sure response-required fields exist to satisfy API schemas."""
+        job_id = job_data.get("id") or job_data.get("job_id") or fallback_id
+        job_data["id"] = str(job_id)
+
+        title = job_data.get("title") or job_data.get("job_title") or "Untitled role"
+        job_data["title"] = str(title)
+
+        company = job_data.get("company") or job_data.get("employer_name") or "Unknown"
+        job_data["company"] = str(company)
+
+        location = job_data.get("location") or job_data.get("job_city") or job_data.get("job_country") or "Unknown"
+        job_data["location"] = str(location)
+
+        # Lists required by schema
+        if not isinstance(job_data.get("missing_skills"), list):
+            job_data["missing_skills"] = list(job_data.get("missing_skills") or [])
+        if not isinstance(job_data.get("matched_skills"), list):
+            job_data["matched_skills"] = list(job_data.get("matched_skills") or [])
+
+        # Optional list
+        highlights = job_data.get("highlights")
+        if highlights is None:
+            job_data["highlights"] = None
+        elif not isinstance(highlights, list):
+            job_data["highlights"] = [str(highlights)]
+
+        # Ensure explanation always exists (may be overwritten later)
+        if not job_data.get("explanation"):
+            job_data["explanation"] = ""
+
+        # Coerce numeric fields that will be serialized
+        JobRecommender._coerce_metric_types(job_data)
+
+    @staticmethod
+    def _coerce_metric_types(job_data: Dict) -> None:
+        for key in ("match_percentage", "skill_overlap", "experience_alignment", "similarity"):
+            if key in job_data and job_data[key] is not None:
+                try:
+                    job_data[key] = float(job_data[key])
+                except Exception:
+                    job_data[key] = 0.0
 
     # ------------------------------------------------------------------
     # Helpers
