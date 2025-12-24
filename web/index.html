@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analyzer - AI-Powered ATS Optimization</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="background-gradient"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <i class="fas fa-file-alt"></i>
+                <span>ResumeLab</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#upload" class="nav-link active" data-section="upload">Upload</a></li>
+                <li><a href="#analysis" class="nav-link" data-section="analysis">Analysis</a></li>
+                <li><a href="#optimize" class="nav-link" data-section="optimize">Optimize</a></li>
+                <li><a href="#jobs" class="nav-link" data-section="jobs">Jobs</a></li>
+                <li><a href="#chat" class="nav-link" data-section="chat">Chat</a></li>
+            </ul>
+            <div class="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        
+        <!-- Upload Section -->
+        <section id="upload" class="section active">
+            <div class="section-header">
+                <h1>Resume Analyzer</h1>
+                <p>AI-powered ATS scoring, skill analysis, and optimization</p>
+            </div>
+
+            <div class="upload-wrapper">
+                <!-- Resume Upload Card -->
+                <div class="glass-card upload-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-upload"></i> Upload Resume</h2>
+                        <p class="subtitle">Supports PDF, DOCX, and TXT formats</p>
+                    </div>
+
+                    <div class="drop-zone" id="dropZone">
+                        <div class="drop-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h3>Drag & drop your resume</h3>
+                        <p>or</p>
+                        <button class="btn btn-primary" id="uploadBtn">
+                            <i class="fas fa-folder-open"></i> Browse Files
+                        </button>
+                        <input type="file" id="fileInput" accept=".pdf,.docx,.txt" style="display: none;">
+                        <p class="file-hint">Max file size: 10MB</p>
+                    </div>
+
+                    <div id="uploadProgress" class="upload-progress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <p id="progressText">Uploading... 0%</p>
+                    </div>
+                </div>
+
+                <!-- Job Description Card -->
+                <div class="glass-card job-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-briefcase"></i> Job Description</h2>
+                        <p class="subtitle">Paste the job description to analyze</p>
+                    </div>
+
+                    <textarea 
+                        id="jobDescription" 
+                        class="input-field" 
+                        placeholder="Paste the job description here... We'll extract skills and requirements automatically."
+                        rows="10"
+                    ></textarea>
+
+                    <button class="btn btn-accent btn-block" id="analyzeBtn">
+                        <i class="fas fa-magic"></i> Analyze Resume & Job Match
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Analysis Section -->
+        <section id="analysis" class="section">
+            <div class="section-header">
+                <h1>ATS Score & Analysis</h1>
+                <p>Comprehensive resume evaluation with detailed insights</p>
+            </div>
+
+            <div class="analysis-wrapper">
+                <!-- ATS Score Card -->
+                <div class="glass-card ats-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-chart-pie"></i> ATS Score</h2>
+                    </div>
+
+                    <div class="score-display">
+                        <div class="circular-progress">
+                            <canvas id="scoreCanvas" width="200" height="200"></canvas>
+                            <div class="score-value">
+                                <span id="scoreNumber">0</span>
+                                <span class="score-max">/100</span>
+                            </div>
+                        </div>
+                        <div class="score-details">
+                            <div class="score-item">
+                                <span class="score-label">Skills Match</span>
+                                <div class="mini-bar">
+                                    <div class="mini-fill" id="skillsScore" style="width: 0%"></div>
+                                </div>
+                                <span class="score-text" id="skillsPercent">0%</span>
+                            </div>
+                            <div class="score-item">
+                                <span class="score-label">Experience</span>
+                                <div class="mini-bar">
+                                    <div class="mini-fill" id="experienceScore" style="width: 0%"></div>
+                                </div>
+                                <span class="score-text" id="experiencePercent">0%</span>
+                            </div>
+                            <div class="score-item">
+                                <span class="score-label">Keywords</span>
+                                <div class="mini-bar">
+                                    <div class="mini-fill" id="keywordsScore" style="width: 0%"></div>
+                                </div>
+                                <span class="score-text" id="keywordsPercent">0%</span>
+                            </div>
+                            <div class="score-item">
+                                <span class="score-label">Formatting</span>
+                                <div class="mini-bar">
+                                    <div class="mini-fill" id="formattingScore" style="width: 0%"></div>
+                                </div>
+                                <span class="score-text" id="formattingPercent">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Match Percentage Card -->
+                <div class="glass-card match-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-percent"></i> Job Match</h2>
+                    </div>
+
+                    <div class="match-display">
+                        <div class="large-progress">
+                            <svg viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" class="progress-bg"></circle>
+                                <circle cx="50" cy="50" r="45" class="progress-circle" id="matchCircle" style="stroke-dashoffset: 282.6"></circle>
+                            </svg>
+                            <div class="match-value">
+                                <span id="matchPercent">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills Analysis -->
+            <div class="skills-section">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-star"></i> Skills Analysis</h2>
+                    </div>
+
+                    <div class="skills-container">
+                        <div class="skills-column">
+                            <h3><i class="fas fa-check-circle"></i> Matched Skills</h3>
+                            <div id="matchedSkills" class="skills-list">
+                                <p class="empty-state">No skills matched yet</p>
+                            </div>
+                        </div>
+
+                        <div class="skills-column">
+                            <h3><i class="fas fa-exclamation-circle"></i> Missing Skills</h3>
+                            <div id="missingSkills" class="skills-list">
+                                <p class="empty-state">No missing skills identified</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skill Gaps -->
+            <div class="gaps-section">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-target"></i> Critical Skill Gaps</h2>
+                        <p class="subtitle">Prioritized areas for improvement</p>
+                    </div>
+
+                    <div id="skillGaps" class="gaps-list">
+                        <p class="empty-state">No skill gaps identified</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Optimize Section -->
+        <section id="optimize" class="section">
+            <div class="section-header">
+                <h1>Resume Optimization</h1>
+                <p>AI-powered suggestions to improve your resume</p>
+            </div>
+
+            <div class="optimize-wrapper">
+                <!-- Improvements Card -->
+                <div class="glass-card improvements-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-lightbulb"></i> Improvement Suggestions</h2>
+                    </div>
+
+                    <div id="improvements" class="improvements-list">
+                        <p class="empty-state">Load analysis to see suggestions</p>
+                    </div>
+
+                    <button class="btn btn-secondary btn-block" id="rewriteBulletsBtn" style="margin-top: 20px; display: none;">
+                        <i class="fas fa-wand-magic-sparkles"></i> Rewrite Bullet Points
+                    </button>
+                </div>
+
+                <!-- Rewritten Bullets Card -->
+                <div class="glass-card bullets-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-pen-fancy"></i> Optimized Bullets</h2>
+                    </div>
+
+                    <div id="rewrittenBullets" class="bullets-list">
+                        <p class="empty-state">Click "Rewrite Bullet Points" to generate optimized versions</p>
+                    </div>
+
+                    <div class="button-group" id="bulletActions" style="display: none; margin-top: 20px;">
+                        <button class="btn btn-primary" id="downloadResumeBtn">
+                            <i class="fas fa-download"></i> Download Optimized Resume
+                        </button>
+                        <button class="btn btn-secondary" id="copyBulletsBtn">
+                            <i class="fas fa-copy"></i> Copy to Clipboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Jobs Section -->
+        <section id="jobs" class="section">
+            <div class="section-header">
+                <h1>Recommended Jobs</h1>
+                <p>Personalized openings ranked by semantic fit and skill overlap</p>
+            </div>
+
+            <div class="glass-card jobs-toolbar">
+                <div class="jobs-filter-group">
+                    <div class="filter-item">
+                        <label for="jobRoleFilter">Role</label>
+                        <select id="jobRoleFilter" class="filter-select">
+                            <option value="">All roles</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="jobLocationFilter">Location</label>
+                        <select id="jobLocationFilter" class="filter-select">
+                            <option value="">All locations</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="jobExperienceFilter">Experience</label>
+                        <select id="jobExperienceFilter" class="filter-select">
+                            <option value="">All levels</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="jobs-actions">
+                    <button class="btn btn-secondary" id="jobRefreshBtn">
+                        <i class="fas fa-sync"></i> Refresh Recommendations
+                    </button>
+                </div>
+            </div>
+
+            <div id="jobEmptyState" class="glass-card job-empty">
+                <h3><i class="fas fa-search"></i> Upload a resume to unlock tailored job matches</h3>
+                <p>Once your resume is processed, we will analyze real job descriptions and highlight the best fits based on skills, experience, and semantic alignment.</p>
+            </div>
+
+            <div id="jobRecommendations" class="jobs-grid"></div>
+        </section>
+
+        <!-- Chat Section -->
+        <section id="chat" class="section">
+            <div class="section-header">
+                <h1>Chat with Your Resume</h1>
+                <p>Ask questions about your resume powered by AI</p>
+            </div>
+
+            <div class="chat-wrapper">
+                <div class="glass-card chat-card">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message assistant-message">
+                            <div class="message-content">
+                                <p>Hi! 👋 I'm your AI resume assistant. Ask me anything about your resume - my answers are always based on the content you've uploaded.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-wrapper">
+                        <textarea 
+                            id="chatInput" 
+                            class="chat-input" 
+                            placeholder="Ask about your experience, skills, or projects... Press Ctrl+Enter to send"
+                            rows="3"
+                        ></textarea>
+                        <button class="btn btn-accent" id="sendChatBtn">
+                            <i class="fas fa-paper-plane"></i> Send
+                        </button>
+                    </div>
+
+                    <div id="chatIndicator" class="typing-indicator" style="display: none;">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="spinner-overlay" style="display: none;">
+        <div class="spinner">
+            <div class="spinner-ring"></div>
+            <p>Processing...</p>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="/js/api.js?v=20251224"></script>
+    <script src="/js/ui.js?v=20251224"></script>
+    <script src="/js/main.js?v=20251224"></script>
+</body>
+</html>

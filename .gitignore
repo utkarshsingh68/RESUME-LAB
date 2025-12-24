@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+.Python
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Env vars / secrets
+.env
+.env.*
+
+# Test / tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local data / indexes (generated)
+# Keep job_listings.json if you want sample data
+/data/resume_index.faiss
+/data/resume_index.faiss.metadata
+/data/*.faiss
+/data/*.faiss.metadata
+/data/*.metadata

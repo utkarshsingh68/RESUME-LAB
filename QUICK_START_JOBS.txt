@@ -1,0 +1,183 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                   🎯 LINKEDIN JOB SEARCH - QUICK START                      ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+✅ WHAT'S NEW?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Your Resume Analyzer can now search for jobs from:
+  • LinkedIn
+  • Indeed  
+  • Glassdoor
+  • RemoteOK (bonus - no auth required)
+
+🆓 FREE TIER: 500 searches/month via RapidAPI's JSearch
+
+
+📋 SETUP (5 MINUTES)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Get Free API Key:
+   → Visit: https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch
+   → Sign up (free)
+   → Subscribe to "Basic Plan" (FREE - 500 requests/month)
+   → Copy your API key
+
+2. Add to .env file:
+   RAPIDAPI_KEY=your_api_key_here
+
+3. Test it:
+   python test_job_search.py
+
+
+🚀 USAGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+API Endpoint: POST /api/jobs/fetch
+
+Example Requests:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# LinkedIn Jobs - Python Developer in New York
+POST /api/jobs/fetch?source=linkedin&query=python developer&location=New York&limit=20
+
+# Indeed Jobs - Data Scientist (Remote Only)
+POST /api/jobs/fetch?source=indeed&query=data scientist&remote_only=true&limit=30
+
+# Glassdoor Jobs - Machine Learning Engineer
+POST /api/jobs/fetch?source=glassdoor&query=machine learning engineer&location=San Francisco
+
+# All Sources Combined
+POST /api/jobs/fetch?source=jsearch&query=software engineer&location=United States&limit=50
+
+# RemoteOK (No API Key Needed!)
+POST /api/jobs/fetch?source=remoteok&tags=python,remote&limit=25
+
+
+💻 PYTHON CODE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+from core.job_fetcher import JobFetcher
+
+fetcher = JobFetcher()
+
+# Fetch LinkedIn jobs
+jobs = fetcher.fetch_jsearch_jobs(
+    query="python developer",
+    location="New York",
+    remote_jobs_only=False,
+    limit=50
+)
+
+# Save to database
+fetcher.save_jobs_to_file(jobs, append=True)
+
+print(f"Fetched {len(jobs)} jobs!")
+for job in jobs[:5]:
+    print(f"  • {job['title']} at {job['company']}")
+
+
+📊 AVAILABLE SOURCES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Check available sources:
+  GET /api/jobs/sources
+
+Response shows:
+  ✓ Which sources are configured
+  ✓ Free tier limits
+  ✓ Setup instructions
+
+
+🎯 SEARCH PARAMETERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Parameter       | Description                           | Example
+━━━━━━━━━━━━━━━━|━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━|━━━━━━━━━━━━━━━━━━━━━
+source          | Job board (jsearch/linkedin/indeed)   | linkedin
+query           | Job title or keywords                 | "python developer"
+location        | City or country                       | "New York"
+remote_only     | Filter for remote jobs                | true
+limit           | Max jobs to fetch (1-100)             | 50
+append          | Add to existing jobs                  | true
+
+
+📈 RATE LIMITS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Free Tier:
+  ✓ 500 requests/month
+  ✓ ~16 requests/day
+  ✓ Perfect for testing and small projects
+
+Paid Plans (if you need more):
+  • Pro: $9.99/mo - 10,000 requests
+  • Ultra: $49.99/mo - 100,000 requests
+
+
+🔍 EXAMPLE QUERIES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Job Role                    | Query Example
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━|━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Python Developer            | "python developer django flask"
+Data Scientist              | "data scientist machine learning python"
+Frontend Engineer           | "frontend developer react typescript"
+DevOps Engineer             | "devops engineer kubernetes aws"
+Full Stack Developer        | "full stack developer react nodejs"
+Machine Learning Engineer   | "machine learning engineer tensorflow pytorch"
+
+
+🛠️ TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Error: "RAPIDAPI_KEY not configured"
+  → Add RAPIDAPI_KEY to your .env file
+  → Restart the backend server
+
+Error: "No jobs fetched"
+  → Verify API key is valid
+  → Check you haven't exceeded free tier (500/month)
+  → Try a different query
+  → Check RapidAPI dashboard: https://rapidapi.com/developer/billing
+
+Jobs not showing specific source:
+  → Use source=linkedin, source=indeed, or source=glassdoor
+  → source=jsearch aggregates all sources
+
+
+📚 DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Detailed Setup:     SETUP_JSEARCH.md
+API Documentation:  http://localhost:8000/docs (when server running)
+Test Script:        python test_job_search.py
+Main README:        README.md
+
+
+💡 PRO TIPS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✓ Be specific in queries: "senior python developer django" vs "developer"
+✓ Use location filters to narrow results
+✓ Set remote_only=true for remote jobs
+✓ Start with small limits (10-20) when testing
+✓ Combine with resume matching for best results
+✓ Check your usage at: https://rapidapi.com/developer/billing
+
+
+🎉 YOU'RE READY!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Now you can:
+  1. Search LinkedIn jobs ✓
+  2. Search Indeed jobs ✓
+  3. Search Glassdoor jobs ✓
+  4. Match resumes to real job postings ✓
+  5. Get AI-powered job recommendations ✓
+
+Start the backend and try it:
+  python -m backend.main
+
+Then visit: http://localhost:8000/docs
