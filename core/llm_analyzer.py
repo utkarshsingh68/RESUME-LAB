@@ -1,6 +1,7 @@
 """LLM-powered resume analysis service."""
 from typing import Dict, List
 from config import settings
+from prompts import CAREER_COACH_PROMPT
 
 
 class ResumeLLMAnalyzer:
@@ -29,7 +30,7 @@ class ResumeLLMAnalyzer:
             response = self.client.chat.completions.create(
                 model=settings.LLM_MODEL,
                 messages=[
-                    {"role": "system", "content": "You are an expert resume analyst and HR professional."},
+                    {"role": "system", "content": CAREER_COACH_PROMPT},
                     {"role": "user", "content": prompt}
                 ],
                 temperature=settings.LLM_TEMPERATURE,
@@ -81,27 +82,41 @@ Format as JSON."""
     
     @staticmethod
     def _build_analysis_prompt(resume_text: str, job_description: str = None) -> str:
-        """Build comprehensive analysis prompt."""
+        """Build comprehensive analysis prompt following AI Career Coach format."""
         
-        base_prompt = f"""Analyze this resume comprehensively:
+        base_prompt = f"""RESUME TEXT:
+{resume_text[:2500]}
 
-RESUME:
-{resume_text[:2000]}
+Please provide a comprehensive analysis following this exact structure:
 
-Provide structured analysis with:
-1. **Strengths**: Key qualifications and achievements
-2. **Experience Level**: Years and seniority assessment
-3. **Technical Skills**: Identified technical competencies
-4. **Soft Skills**: Identified soft skills
-5. **Career Trajectory**: Career path analysis
-6. **Gaps**: Potential gaps or improvements
-7. **Score**: Overall resume quality (0-100)
-8. **Recommendations**: Specific improvements
+## Resume Summary
+Brief overview of the candidate's profile, experience level, and primary domain.
 
-Be concise and actionable."""
+## ATS Score
+Overall compatibility score (0-100) and detailed breakdown.
+
+## Strengths
+What's working well in this resume (bullet points).
+
+## Skill Gaps
+Missing or weak areas with clear explanations.
+
+## Improved Resume Suggestions
+Concrete improvements with rewritten bullet points using strong action verbs and measurable outcomes.
+
+## Job Role Recommendations
+Suitable positions based on this profile.
+
+## Interview Preparation
+Key interview questions for their target roles.
+
+## Next Action Steps
+Prioritized tasks to improve candidacy.
+
+Be specific, actionable, and data-driven."""
         
         if job_description:
-            base_prompt += f"\n\nJOB DESCRIPTION:\n{job_description[:1000]}\n\nAlso assess fit for this role."
+            base_prompt += f"\n\nTARGET JOB DESCRIPTION:\n{job_description[:1500]}\n\nCalculate detailed ATS match score based on skill overlap, keyword relevance, experience alignment, and role fit."
         
         return base_prompt
     
