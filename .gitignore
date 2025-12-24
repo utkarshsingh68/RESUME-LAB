@@ -26,6 +26,7 @@ Thumbs.db
 
 # Local data / indexes (generated)
 # Keep job_listings.json if you want sample data
+/data/resumes/
 /data/resume_index.faiss
 /data/resume_index.faiss.metadata
 /data/*.faiss

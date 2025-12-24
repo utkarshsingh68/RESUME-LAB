@@ -7,6 +7,9 @@ import logging
 import uuid
 from typing import Dict
 from pathlib import Path
+import json
+
+import numpy as np
 
 from config import settings
 from core.nlp_pipeline import ResumePipeline
@@ -41,6 +44,66 @@ job_recommender: JobRecommender = None
 job_fetcher: JobFetcher = None
 
 
+resumes_dir = Path(__file__).parent.parent / "data" / "resumes"
+
+
+def _serialize_resume_record(record: Dict) -> Dict:
+    """Convert in-memory resume record into JSON-safe payload."""
+    payload = {**record}
+    embedding = payload.get("profile_embedding")
+    if embedding is not None:
+        if isinstance(embedding, np.ndarray):
+            payload["profile_embedding"] = embedding.astype("float32").tolist()
+        else:
+            payload["profile_embedding"] = embedding
+    return payload
+
+
+def _deserialize_resume_record(payload: Dict) -> Dict:
+    """Convert JSON payload back into in-memory resume record."""
+    record = {**payload}
+    embedding = record.get("profile_embedding")
+    if embedding is not None and not isinstance(embedding, np.ndarray):
+        record["profile_embedding"] = np.array(embedding, dtype="float32")
+    return record
+
+
+def save_resume_to_disk(resume_id: str, record: Dict) -> None:
+    """Persist a processed resume record so sessions survive reloads."""
+    resumes_dir.mkdir(parents=True, exist_ok=True)
+    path = resumes_dir / f"{resume_id}.json"
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(_serialize_resume_record(record), f, ensure_ascii=False)
+
+
+def delete_resume_from_disk(resume_id: str) -> None:
+    path = resumes_dir / f"{resume_id}.json"
+    try:
+        path.unlink(missing_ok=True)
+    except Exception:
+        logger.exception("Failed to delete persisted resume %s", resume_id)
+
+
+def load_resumes_from_disk() -> None:
+    """Load persisted resumes into memory (for job recs + analysis continuity)."""
+    if not resumes_dir.exists():
+        return
+
+    loaded = 0
+    for path in resumes_dir.glob("*.json"):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            resume_id = payload.get("resume_id") or path.stem
+            record = _deserialize_resume_record(payload)
+            resume_storage[resume_id] = record
+            loaded += 1
+        except Exception:
+            logger.exception("Failed to load persisted resume %s", path.name)
+
+    if loaded:
+        logger.info("Loaded %d persisted resumes", loaded)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan context manager for startup and shutdown."""
@@ -65,6 +128,9 @@ async def lifespan(app: FastAPI):
         print("✅ Vector store loaded from disk")
     except:
         print("📝 Starting with fresh vector store")
+
+    # Restore resumes so clients keep working after reloads.
+    load_resumes_from_disk()
     
     yield
     
@@ -144,13 +210,22 @@ async def upload_resume(file: UploadFile = File(...)) -> Dict:
         profile_embedding = embedding_service.embed_text(profile_text).astype("float32")
         experience_years = JobRecommender._estimate_experience_years(resume_text)
 
-        resume_storage[resume_id] = {
+        resume_record = {
+            "resume_id": resume_id,
             "filename": file.filename,
             "raw_text": resume_text,
             "processed": processed_data,
             "profile_embedding": profile_embedding,
             "experience_years": experience_years,
         }
+
+        resume_storage[resume_id] = resume_record
+
+        # Persist resume so job recommendations remain personalized after server reload.
+        try:
+            save_resume_to_disk(resume_id, resume_record)
+        except Exception:
+            logger.exception("Failed to persist resume %s", resume_id)
         
         return {
             "resume_id": resume_id,
@@ -431,6 +506,7 @@ async def delete_resume(resume_id: str) -> Dict:
         raise HTTPException(status_code=404, detail="Resume not found")
     
     del resume_storage[resume_id]
+    delete_resume_from_disk(resume_id)
     return {"status": "deleted", "resume_id": resume_id}
 
 @app.post("/api/jobs/fetch")
