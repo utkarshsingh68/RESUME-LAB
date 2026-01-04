@@ -10,6 +10,7 @@ let currentImprovementsData = null;
 let jobFiltersData = { roles: [], locations: [], experience_levels: [] };
 let jobFilterSelections = { role: '', location: '', experience: '' };
 let currentJobRecommendations = [];
+let currentFetchedJobs = [];
 let jobsSectionInitialized = false;
 let jobFiltersLoading = false;
 let jobTopK = 20;
@@ -160,6 +161,12 @@ function initializeEventListeners() {
     const jobRefreshBtn = document.getElementById('jobRefreshBtn');
     if (jobRefreshBtn) {
         jobRefreshBtn.addEventListener('click', () => fetchJobRecommendations(true));
+    }
+
+    // Fetch jobs from web button
+    const fetchJobsBtn = document.getElementById('fetchJobsBtn');
+    if (fetchJobsBtn) {
+        fetchJobsBtn.addEventListener('click', handleFetchJobs);
     }
 }
 
@@ -343,9 +350,107 @@ function updateJobSectionState() {
 
     if (!currentResumeId) {
         emptyState.style.display = 'block';
-        recommendations.innerHTML = '';
+        // Do not clear recommendations here: we may show raw fetched jobs even without a resume.
     } else {
         emptyState.style.display = 'none';
+    }
+}
+
+function renderFetchedJobs(jobs) {
+    const container = document.getElementById('jobRecommendations');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    if (!jobs || jobs.length === 0) {
+        setJobSectionMessage('No fetched jobs found yet. Click “Fetch Jobs from Web” to load some.', 'info');
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    jobs.forEach(job => {
+        const card = document.createElement('div');
+        card.className = 'glass-card job-card';
+
+        const header = document.createElement('div');
+        header.className = 'job-card-header';
+
+        const info = document.createElement('div');
+
+        const titleEl = document.createElement('h3');
+        titleEl.className = 'job-title';
+        titleEl.textContent = job.title || 'Untitled Role';
+
+        const companyEl = document.createElement('div');
+        companyEl.className = 'job-company';
+        const companyName = job.company || 'Unknown company';
+        const locationLabel = job.location || 'Remote';
+        companyEl.textContent = `${companyName} • ${locationLabel}`;
+
+        info.appendChild(titleEl);
+        info.appendChild(companyEl);
+
+        const badge = document.createElement('div');
+        badge.className = 'apply-badge apply-partial';
+        badge.textContent = (job.source || 'Fetched')
+            ? `Source: ${job.source || 'Fetched'}`
+            : 'Fetched';
+
+        header.appendChild(info);
+        header.appendChild(badge);
+        card.appendChild(header);
+
+        const explanation = document.createElement('p');
+        explanation.className = 'job-explanation';
+        explanation.textContent = 'Upload a resume to see match scores for these jobs.';
+        card.appendChild(explanation);
+
+        const footer = document.createElement('div');
+        footer.className = 'job-card-footer';
+
+        const meta = document.createElement('div');
+        const details = [];
+        if (job.category) details.push(job.category);
+        if (job.job_type) details.push(job.job_type);
+        meta.textContent = details.join(' • ') || 'Role details not provided';
+        footer.appendChild(meta);
+
+        const linkUrl = job.apply_url || job.url;
+        if (linkUrl) {
+            const link = document.createElement('a');
+            link.href = linkUrl;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.innerHTML = 'View job posting <i class="fas fa-arrow-up-right-from-square"></i>';
+            footer.appendChild(link);
+        }
+
+        card.appendChild(footer);
+        fragment.appendChild(card);
+    });
+
+    container.appendChild(fragment);
+}
+
+async function loadFetchedJobs(limit = 50) {
+    try {
+        const response = await getFetchedJobs(limit, 0);
+        currentFetchedJobs = response.jobs || [];
+        renderFetchedJobs(currentFetchedJobs);
+    } catch (error) {
+        console.warn('Failed to load fetched jobs via API, trying static file fallback:', error);
+        try {
+            const res = await fetch(`/job_listings.json?v=${Date.now()}`, { cache: 'no-store' });
+            if (!res.ok) {
+                throw new Error(`Static jobs file not available (${res.status})`);
+            }
+            const jobs = await res.json();
+            currentFetchedJobs = Array.isArray(jobs) ? jobs.slice(0, limit) : [];
+            renderFetchedJobs(currentFetchedJobs);
+        } catch (fallbackError) {
+            console.error('Failed to load fetched jobs from static file:', fallbackError);
+        }
     }
 }
 
@@ -614,7 +719,7 @@ async function fetchJobRecommendations(showUploadToast = false) {
         renderJobRecommendations(currentJobRecommendations);
 
         if (currentJobRecommendations.length === 0 && showUploadToast) {
-            showToast('No matching jobs found. Try adjusting filters.', 'info');
+            showToast('No matching jobs found. Try adjusting filters or fetching more jobs.', 'info');
         }
     } catch (error) {
         const message = parseError(error);
@@ -623,6 +728,7 @@ async function fetchJobRecommendations(showUploadToast = false) {
         // If the server was restarted, in-memory resumes are cleared.
         // The UI may still have an old resume_id in sessionStorage.
         if (typeof message === 'string' && message.toLowerCase().includes('resume not found')) {
+            console.log('Session expired - clearing resume data');
             clearResumeData();
             currentResumeId = null;
             currentAnalysisData = null;
@@ -632,13 +738,23 @@ async function fetchJobRecommendations(showUploadToast = false) {
 
             updateChatAvailability(false);
             updateJobSectionState();
-            setJobSectionMessage('Session expired. Please upload your resume again.', 'warning');
-            showToast('Session expired. Please upload your resume again.', 'warning');
+            
+            // Only show message if user explicitly requested it
+            if (showUploadToast) {
+                setJobSectionMessage('Session expired. Please upload your resume again.', 'warning');
+                showToast('Session expired. Please upload your resume again.', 'warning');
+            }
             return;
         }
 
-        showToast(message, 'error');
-        setJobSectionMessage('We could not generate recommendations right now. Try again shortly.', 'error');
+        // Don't show error if just fetching jobs without resume
+        if (!showUploadToast) {
+            console.log('Skipping error display - background refresh without resume');
+            setJobSectionMessage('Upload a resume to see personalized job recommendations.', 'info');
+        } else {
+            showToast(message, 'error');
+            setJobSectionMessage('We could not generate recommendations right now. Try again shortly.', 'error');
+        }
     } finally {
         setJobLoading(false);
     }
@@ -670,7 +786,10 @@ function restoreSessionState() {
         currentImprovementsData = storedImprovements;
     }
 
-    fetchJobRecommendations();
+    // Try to fetch recommendations, but don't show error if session expired
+    fetchJobRecommendations().catch(() => {
+        console.log('Could not restore job recommendations - session may have expired');
+    });
 }
 
 /**
@@ -983,6 +1102,69 @@ function displayImprovements() {
                 actionList
             )
         );
+    }
+}
+
+/**
+ * Handle fetching jobs from web sources
+ */
+async function handleFetchJobs() {
+    const source = document.getElementById('jobSourceSelect').value;
+    const query = document.getElementById('jobSearchQuery').value;
+    const limit = parseInt(document.getElementById('jobSearchLimit').value) || 25;
+    const statusDiv = document.getElementById('fetchJobsStatus');
+    const fetchBtn = document.getElementById('fetchJobsBtn');
+    
+    // Update UI
+    fetchBtn.disabled = true;
+    fetchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fetching...';
+    statusDiv.className = 'fetch-status active info';
+    statusDiv.textContent = `Fetching jobs from ${source}... This may take a moment.`;
+    
+    try {
+        const result = await fetchJobsFromWeb(source, query, limit, true);
+        
+        // Show success message
+        statusDiv.className = 'fetch-status active success';
+        statusDiv.textContent = result.message || `✓ Started fetching jobs from ${source}`;
+        
+        // Show toast
+        showToast(`Fetching jobs from ${source}. This will take a few seconds...`, 'success');
+        
+        // Wait a bit then clear status and optionally refresh recommendations
+        setTimeout(() => {
+            statusDiv.className = 'fetch-status';
+
+            // Always attempt to show the newly fetched jobs.
+            loadFetchedJobs(limit);
+
+            // If we have a valid resume ID, also refresh personalized recommendations.
+            if (currentResumeId) {
+                fetchJobRecommendations(false).then(() => {
+                    showToast('Job database updated! Recommendations refreshed.', 'success');
+                }).catch((error) => {
+                    console.log('Could not refresh recommendations:', error);
+                    if (!error.message || !error.message.toLowerCase().includes('resume not found')) {
+                        showToast('Jobs fetched successfully! Showing fetched jobs list.', 'info');
+                    }
+                });
+            } else {
+                showToast('Jobs fetched successfully! Showing fetched jobs list below.', 'success');
+            }
+        }, 5000);
+        
+    } catch (error) {
+        console.error('Fetch jobs error:', error);
+        statusDiv.className = 'fetch-status active error';
+        statusDiv.textContent = `✗ Error: ${parseError(error)}`;
+        showToast(`Failed to fetch jobs: ${parseError(error)}`, 'error');
+        
+        setTimeout(() => {
+            statusDiv.className = 'fetch-status';
+        }, 5000);
+    } finally {
+        fetchBtn.disabled = false;
+        fetchBtn.innerHTML = '<i class="fas fa-download"></i> Fetch Jobs from Web';
     }
 }
 

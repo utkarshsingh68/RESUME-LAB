@@ -189,6 +189,46 @@ async function getJobRecommendations(resumeId, filters = {}, topK = 100) {
 }
 
 /**
+ * Retrieve raw fetched jobs (not personalized).
+ */
+async function getFetchedJobs(limit = 50, offset = 0) {
+    const params = new URLSearchParams({
+        limit: String(limit),
+        offset: String(offset)
+    });
+
+    return apiRequest(`/jobs/list?${params}`, {
+        method: 'GET'
+    });
+}
+
+/**
+ * Fetch jobs from web sources
+ */
+async function fetchJobsFromWeb(source, query, limit, append = true) {
+    const params = new URLSearchParams({
+        source: source,
+        query: query || '',
+        limit: limit || 25,
+        append: append
+    });
+    
+    return apiRequest(`/jobs/fetch?${params}`, {
+        method: 'POST',
+        timeout: 180000 // 3 minutes for scraping
+    });
+}
+
+/**
+ * Get available job sources
+ */
+async function getJobSources() {
+    return apiRequest('/jobs/sources', {
+        method: 'GET'
+    });
+}
+
+/**
  * Health check
  */
 async function healthCheck() {

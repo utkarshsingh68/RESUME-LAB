@@ -260,6 +260,45 @@
                 <p>Personalized openings ranked by semantic fit and skill overlap</p>
             </div>
 
+            <!-- Job Scraper Card -->
+            <div class="glass-card job-scraper-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-globe"></i> Fetch Fresh Jobs</h2>
+                    <p class="subtitle">Search and scrape jobs from multiple sources</p>
+                </div>
+                
+                <div class="scraper-controls">
+                    <div class="scraper-row">
+                        <div class="filter-item" style="flex: 2;">
+                            <label for="jobSourceSelect">Job Source</label>
+                            <select id="jobSourceSelect" class="filter-select">
+                                <option value="remotive">Remotive (Free, Recommended)</option>
+                                <option value="scrape_all">All Sources (Free)</option>
+                                <option value="remoteok">RemoteOK (Free)</option>
+                                <option value="jsearch">JSearch - LinkedIn/Indeed (API Key)</option>
+                                <option value="linkedin">LinkedIn Jobs (API Key)</option>
+                                <option value="indeed">Indeed (API Key)</option>
+                                <option value="glassdoor">Glassdoor (API Key)</option>
+                            </select>
+                        </div>
+                        <div class="filter-item" style="flex: 2;">
+                            <label for="jobSearchQuery">Search Query</label>
+                            <input type="text" id="jobSearchQuery" class="filter-select" placeholder="e.g., python developer, software-dev" value="software-dev">
+                        </div>
+                        <div class="filter-item" style="flex: 1;">
+                            <label for="jobSearchLimit">Limit</label>
+                            <input type="number" id="jobSearchLimit" class="filter-select" value="25" min="1" max="100">
+                        </div>
+                    </div>
+                    <div class="scraper-row">
+                        <button class="btn btn-accent" id="fetchJobsBtn">
+                            <i class="fas fa-download"></i> Fetch Jobs from Web
+                        </button>
+                        <div id="fetchJobsStatus" class="fetch-status"></div>
+                    </div>
+                </div>
+            </div>
+
             <div class="glass-card jobs-toolbar">
                 <div class="jobs-filter-group">
                     <div class="filter-item">
@@ -347,8 +386,8 @@
     <div id="toast" class="toast"></div>
 
     <!-- Scripts -->
-    <script src="/js/api.js?v=20251224"></script>
-    <script src="/js/ui.js?v=20251224"></script>
-    <script src="/js/main.js?v=20251224"></script>
+    <script src="/js/api.js?v=20260103b"></script>
+    <script src="/js/ui.js?v=20260103b"></script>
+    <script src="/js/main.js?v=20260103b"></script>
 </body>
 </html>

@@ -152,6 +152,25 @@ class JobRecommender:
         location = job_data.get("location") or job_data.get("job_city") or job_data.get("job_country") or "Unknown"
         job_data["location"] = str(location)
 
+        # Fields that are Optional[...] in the schema but still required unless present.
+        # Pydantic v2 treats Optional without a default as "required but can be None".
+        employment_type = (
+            job_data.get("employment_type")
+            or job_data.get("job_employment_type")
+            or job_data.get("job_type")
+        )
+        job_data["employment_type"] = str(employment_type) if employment_type is not None else None
+
+        experience_level = job_data.get("experience_level") or job_data.get("job_experience_level")
+        job_data["experience_level"] = str(experience_level) if experience_level is not None else None
+
+        role = job_data.get("role") or job_data.get("job_role")
+        job_data["role"] = str(role) if role is not None else None
+
+        # Convenience mapping for apply links across different sources.
+        apply_url = job_data.get("apply_url") or job_data.get("url") or job_data.get("job_apply_link")
+        job_data["apply_url"] = str(apply_url) if apply_url else None
+
         # Lists required by schema
         if not isinstance(job_data.get("missing_skills"), list):
             job_data["missing_skills"] = list(job_data.get("missing_skills") or [])

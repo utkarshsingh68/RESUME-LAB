@@ -8,6 +8,7 @@ from datetime import datetime
 import time
 
 from config import settings
+from core.job_scraper import JobScraper
 
 
 class JobFetcher:
@@ -16,6 +17,7 @@ class JobFetcher:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.data_path = Path(settings.JOB_DATA_PATH)
+        self.scraper = JobScraper()
         
     def fetch_remoteok_jobs(self, tags: Optional[List[str]] = None, limit: int = 50) -> List[Dict]:
         """
@@ -735,6 +737,16 @@ class JobFetcher:
             self.data_path.parent.mkdir(parents=True, exist_ok=True)
             with self.data_path.open('w', encoding='utf-8') as f:
                 json.dump(unique_jobs, f, indent=2, ensure_ascii=False)
+
+            # Also write a copy into the static web directory so the web UI can
+            # display fetched jobs even without a resume/recommendations.
+            try:
+                web_jobs_path = Path(__file__).parent.parent / "web" / "job_listings.json"
+                web_jobs_path.parent.mkdir(parents=True, exist_ok=True)
+                with web_jobs_path.open('w', encoding='utf-8') as wf:
+                    json.dump(unique_jobs, wf, indent=2, ensure_ascii=False)
+            except Exception as web_exc:
+                self.logger.warning("Failed to write web job listings copy: %s", web_exc)
             
             self.logger.info(f"Saved {len(unique_jobs)} jobs to {self.data_path}")
             return True
@@ -757,7 +769,7 @@ class JobFetcher:
         Fetch jobs from specified source and save to file.
         
         Args:
-            source: Job source ('remoteok', 'jsearch', 'linkedin', 'indeed', 'glassdoor')
+            source: Job source ('remoteok', 'jsearch', 'linkedin', 'indeed', 'glassdoor', 'weworkremotely', 'remotive', 'ycombinator', 'scrape_all')
             tags: Filter tags for RemoteOK
             query: Search query for JSearch (e.g., 'python developer')
             location: Location filter for JSearch
@@ -772,6 +784,7 @@ class JobFetcher:
         
         source_lower = source.lower()
 
+        # Existing API sources
         if source_lower == "remoteok":
             jobs = self.fetch_remoteok_jobs(tags=tags, limit=limit)
         elif source_lower == "jsearch":
@@ -813,11 +826,28 @@ class JobFetcher:
             )
         elif source_lower == "github":
             jobs = self.fetch_github_jobs(limit=limit)
+        
+        # Web scraping sources
+        elif source_lower == "weworkremotely":
+            category = query or "programming"
+            jobs = self.scraper.scrape_weworkremotely(category=category, limit=limit)
+        elif source_lower == "remotive":
+            category = query or "software-dev"
+            jobs = self.scraper.scrape_remotive(category=category, limit=limit)
+        elif source_lower == "ycombinator":
+            jobs = self.scraper.scrape_ycombinator(query=query or "", limit=limit)
+        elif source_lower == "scrape_all":
+            # Scrape from all available scraping sources
+            jobs = self.scraper.scrape_all_sources(
+                query=query or "python",
+                location=location or "",
+                limit_per_source=limit // 3  # Distribute limit across sources
+            )
         else:
             return {"success": False, "message": f"Unknown source: {source}", "count": 0}
         
         if not jobs:
-            return {"success": False, "message": "No jobs fetched. Check API keys.", "count": 0}
+            return {"success": False, "message": "No jobs fetched. Check API keys or network.", "count": 0}
         
         success = self.save_jobs_to_file(jobs, append=append)
         

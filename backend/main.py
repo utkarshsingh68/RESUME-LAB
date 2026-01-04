@@ -162,7 +162,8 @@ async def health_check():
     return {
         "status": "healthy",
         "service": "Resume Analyzer API",
-        "version": settings.API_VERSION
+        "version": settings.API_VERSION,
+        "code_marker": "UPDATED_WITH_JOBS_LIST_ENDPOINT"
     }
 
 
@@ -335,6 +336,30 @@ async def get_job_filters() -> JobFiltersResponse:
     """Return available job recommendation filters."""
     options = job_recommender.get_filter_options()
     return JobFiltersResponse(**options)
+
+
+@app.get("/api/jobs/list", response_model=Dict)
+async def list_fetched_jobs(
+    limit: int = Query(50, ge=1, le=200, description="Max jobs to return"),
+    offset: int = Query(0, ge=0, description="Number of jobs to skip"),
+) -> Dict:
+    """Return the raw fetched job listings (not personalized recommendations)."""
+    jobs = []
+    try:
+        data_path = Path(settings.JOB_DATA_PATH)
+        if data_path.exists():
+            jobs = json.loads(data_path.read_text(encoding="utf-8"))
+    except Exception as e:
+        logger.exception("Failed to load job listings")
+        raise HTTPException(status_code=500, detail=f"Failed to load job listings: {str(e)}")
+
+    sliced = jobs[offset: offset + limit]
+    return {
+        "count": len(jobs),
+        "limit": limit,
+        "offset": offset,
+        "jobs": sliced,
+    }
 
 
 @app.post("/api/jobs/recommendations", response_model=JobRecommendationsResponse)
@@ -512,7 +537,7 @@ async def delete_resume(resume_id: str) -> Dict:
 @app.post("/api/jobs/fetch")
 async def fetch_jobs(
     background_tasks: BackgroundTasks,
-    source: str = Query("remoteok", description="Job source: remoteok, linkedin, jsearch, indeed, glassdoor"),
+    source: str = Query("remoteok", description="Job source: remoteok, linkedin, jsearch, indeed, glassdoor, weworkremotely, remotive, ycombinator, scrape_all"),
     query: str = Query(None, description="Job search query (e.g., 'python developer', 'data scientist')"),
     tags: str = Query(None, description="Comma-separated tags for RemoteOK (e.g., python,javascript)"),
     location: str = Query("United States", description="Location filter"),
@@ -521,12 +546,20 @@ async def fetch_jobs(
     append: bool = Query(True, description="Append to existing jobs or replace")
 ) -> Dict:
     """
-    Fetch jobs from external job search APIs and save to local database.
+    Fetch jobs from external job search APIs and web scraping sources.
     
-    Supports:
-    - LinkedIn Job Search API (direct LinkedIn jobs) - requires RAPIDAPI_KEY
-    - JSearch (aggregated jobs like Indeed / Glassdoor) - requires RAPIDAPI_KEY
+    API Sources (requires RAPIDAPI_KEY):
+    - LinkedIn Job Search API (direct LinkedIn jobs)
+    - JSearch (aggregated jobs like Indeed / Glassdoor)
+    - Indeed API
+    - Glassdoor API
     - RemoteOK (free, no auth required)
+    
+    Web Scraping Sources (no API key required):
+    - WeWorkRemotely (remote tech jobs)
+    - Remotive (remote jobs)
+    - Y Combinator (startup jobs)
+    - scrape_all (scrapes from multiple sources)
     
     This runs in the background and refreshes the job recommender when complete.
     """
@@ -569,6 +602,52 @@ async def get_job_sources() -> Dict:
     return {
         "sources": [
             {
+                "name": "scrape_all",
+                "display_name": "All Web Sources (Scraped)",
+                "description": "Scrapes jobs from WeWorkRemotely, Remotive, and Y Combinator",
+                "requires_auth": False,
+                "free": True,
+                "configured": True,
+                "type": "scraping",
+                "recommended": True
+            },
+            {
+                "name": "weworkremotely",
+                "display_name": "WeWorkRemotely",
+                "description": "Remote tech jobs from WeWorkRemotely.com",
+                "requires_auth": False,
+                "free": True,
+                "configured": True,
+                "type": "scraping"
+            },
+            {
+                "name": "remotive",
+                "display_name": "Remotive",
+                "description": "Remote jobs from Remotive.io",
+                "requires_auth": False,
+                "free": True,
+                "configured": True,
+                "type": "scraping"
+            },
+            {
+                "name": "ycombinator",
+                "display_name": "Y Combinator",
+                "description": "Startup jobs from Y Combinator",
+                "requires_auth": False,
+                "free": True,
+                "configured": True,
+                "type": "scraping"
+            },
+            {
+                "name": "remoteok",
+                "display_name": "RemoteOK",
+                "description": "Remote jobs from RemoteOK.com",
+                "requires_auth": False,
+                "free": True,
+                "configured": True,
+                "type": "api"
+            },
+            {
                 "name": "jsearch",
                 "display_name": "JSearch (LinkedIn + Indeed + Glassdoor)",
                 "description": "Aggregated jobs from multiple boards (Indeed, Glassdoor, etc.)",
@@ -576,7 +655,8 @@ async def get_job_sources() -> Dict:
                 "free": True,
                 "free_tier_limit": "500 requests/month",
                 "configured": rapidapi_configured,
-                "setup_url": "https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch"
+                "setup_url": "https://rapidapi.com/letscrape-6bRBa3QguO5/api/jsearch",
+                "type": "api"
             },
             {
                 "name": "linkedin",
@@ -585,7 +665,8 @@ async def get_job_sources() -> Dict:
                 "requires_auth": True,
                 "free": True,
                 "configured": rapidapi_configured,
-                "note": "Uses linkedin-job-search-api.p.rapidapi.com backend"
+                "note": "Uses linkedin-job-search-api.p.rapidapi.com backend",
+                "type": "api"
             },
             {
                 "name": "indeed",
@@ -594,7 +675,8 @@ async def get_job_sources() -> Dict:
                 "requires_auth": True,
                 "free": True,
                 "configured": rapidapi_configured,
-                "note": "Uses indeed12.p.rapidapi.com backend"
+                "note": "Uses indeed12.p.rapidapi.com backend",
+                "type": "api"
             },
             {
                 "name": "glassdoor",
@@ -603,15 +685,8 @@ async def get_job_sources() -> Dict:
                 "requires_auth": True,
                 "free": True,
                 "configured": rapidapi_configured,
-                "note": "Uses glassdoor-real-time.p.rapidapi.com backend"
-            },
-            {
-                "name": "remoteok",
-                "display_name": "RemoteOK",
-                "description": "Remote jobs from RemoteOK.com",
-                "requires_auth": False,
-                "free": True,
-                "configured": True
+                "note": "Uses glassdoor-real-time.p.rapidapi.com backend",
+                "type": "api"
             }
         ],
         "recommended_queries": [
@@ -623,7 +698,11 @@ async def get_job_sources() -> Dict:
             "python", "javascript", "react", "nodejs", "java", 
             "golang", "rust", "devops", "data", "machine-learning",
             "frontend", "backend", "fullstack"
-        ]
+        ],
+        "scraping_categories": {
+            "weworkremotely": ["programming", "design", "marketing", "customer-support"],
+            "remotive": ["software-dev", "design", "marketing", "sales", "customer-support"]
+        }
     }
 
 
@@ -650,3 +729,5 @@ if __name__ == "__main__":
         log_level="info",
         timeout_keep_alive=300  # 5 minutes for long-running LLM operations
     )
+
+# Reload trigger: 2026-01-03 22:55:08

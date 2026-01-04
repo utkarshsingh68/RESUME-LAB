@@ -985,6 +985,67 @@ body {
    JOB RECOMMENDATIONS
    ============================================ */
 
+/* Job Scraper Card */
+.job-scraper-card {
+    margin-bottom: var(--spacing-lg);
+}
+
+.job-scraper-card .card-header {
+    margin-bottom: var(--spacing-md);
+}
+
+.scraper-controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.scraper-row {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.scraper-row .filter-item {
+    flex: 1;
+    min-width: 150px;
+}
+
+.scraper-row .btn {
+    flex-shrink: 0;
+}
+
+.fetch-status {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    display: none;
+}
+
+.fetch-status.active {
+    display: block;
+}
+
+.fetch-status.info {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    color: #60a5fa;
+}
+
+.fetch-status.success {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #34d399;
+}
+
+.fetch-status.error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+}
+
 .jobs-toolbar {
     display: flex;
     justify-content: space-between;

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Scraping Demo - Resume Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        select, input, button {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .sources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .source-card {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .source-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .source-card.selected {
+            border-color: #667eea;
+            background: #f0f0ff;
+        }
+        
+        .source-card h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        
+        .source-card .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        .badge.free {
+            background: #10b981;
+            color: white;
+        }
+        
+        .badge.scraping {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .badge.api {
+            background: #8b5cf6;
+            color: white;
+        }
+        
+        .results {
+            margin-top: 20px;
+        }
+        
+        .job-card {
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            background: #f9f9f9;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        
+        .job-card h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .job-card .company {
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .job-card .location {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            display: block;
+        }
+        
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+            display: block;
+        }
+        
+        .status.info {
+            background: #dbeafe;
+            color: #1e40af;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Job Web Scraper</h1>
+            <p>Search for jobs from multiple sources without API keys</p>
+        </div>
+        
+        <div class="card">
+            <h2>Select Job Sources</h2>
+            <div id="sources" class="sources-grid">
+                <!-- Sources will be loaded here -->
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Search Configuration</h2>
+            
+            <div class="form-group">
+                <label for="query">Search Query / Category</label>
+                <input type="text" id="query" placeholder="e.g., python developer, software-dev">
+            </div>
+            
+            <div class="form-group">
+                <label for="limit">Number of Jobs</label>
+                <input type="number" id="limit" value="25" min="1" max="100">
+            </div>
+            
+            <div class="form-group">
+                <label for="append">
+                    <input type="checkbox" id="append" checked style="width: auto; margin-right: 10px;">
+                    Append to existing jobs (don't replace)
+                </label>
+            </div>
+            
+            <button id="searchBtn" onclick="searchJobs()">🚀 Start Scraping</button>
+            
+            <div id="status" class="status"></div>
+        </div>
+        
+        <div class="card">
+            <h2>Recent Jobs</h2>
+            <div id="results" class="results">
+                <p style="color: #666;">Click "Start Scraping" to fetch jobs...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let selectedSource = 'remotive';
+        let sources = [];
+        
+        // Load available sources
+        async function loadSources() {
+            try {
+                const response = await fetch(`${API_BASE}/api/jobs/sources`);
+                const data = await response.json();
+                sources = data.sources;
+                
+                const container = document.getElementById('sources');
+                container.innerHTML = '';
+                
+                // Filter for free/scraping sources
+                const freeSources = sources.filter(s => !s.requires_auth || s.name === 'remoteok');
+                
+                freeSources.forEach(source => {
+                    const card = document.createElement('div');
+                    card.className = 'source-card' + (source.name === selectedSource ? ' selected' : '');
+                    card.onclick = () => selectSource(source.name);
+                    
+                    const badges = [];
+                    if (!source.requires_auth) badges.push(`<span class="badge free">FREE</span>`);
+                    if (source.type) badges.push(`<span class="badge ${source.type}">${source.type.toUpperCase()}</span>`);
+                    
+                    card.innerHTML = `
+                        <h3>${source.display_name}</h3>
+                        <p style="font-size: 14px; color: #666; margin-top: 8px;">${source.description}</p>
+                        <div style="margin-top: 8px;">${badges.join(' ')}</div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                showStatus('Failed to load sources: ' + error.message, 'error');
+            }
+        }
+        
+        function selectSource(sourceName) {
+            selectedSource = sourceName;
+            document.querySelectorAll('.source-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.target.closest('.source-card').classList.add('selected');
+        }
+        
+        async function searchJobs() {
+            const query = document.getElementById('query').value || 'software-dev';
+            const limit = parseInt(document.getElementById('limit').value) || 25;
+            const append = document.getElementById('append').checked;
+            
+            const btn = document.getElementById('searchBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Searching...';
+            
+            showStatus(`Fetching jobs from ${selectedSource}...`, 'info');
+            
+            try {
+                const params = new URLSearchParams({
+                    source: selectedSource,
+                    query: query,
+                    limit: limit,
+                    append: append
+                });
+                
+                const response = await fetch(`${API_BASE}/api/jobs/fetch?${params}`, {
+                    method: 'POST'
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showStatus(data.message + ' Please wait...', 'success');
+                    
+                    // Wait a bit for background task
+                    setTimeout(() => {
+                        loadJobs();
+                    }, 3000);
+                } else {
+                    showStatus('Error: ' + data.detail, 'error');
+                }
+            } catch (error) {
+                showStatus('Error: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '🚀 Start Scraping';
+            }
+        }
+        
+        async function loadJobs() {
+            try {
+                const response = await fetch(`${API_BASE}/data/job_listings.json`);
+                const jobs = await response.json();
+                
+                const container = document.getElementById('results');
+                container.innerHTML = '';
+                
+                if (jobs.length === 0) {
+                    container.innerHTML = '<p style="color: #666;">No jobs found. Try searching!</p>';
+                    return;
+                }
+                
+                // Show last 10 jobs
+                jobs.slice(-10).reverse().forEach(job => {
+                    const card = document.createElement('div');
+                    card.className = 'job-card';
+                    card.innerHTML = `
+                        <h3>${job.title}</h3>
+                        <div class="company">${job.company}</div>
+                        <div class="location">📍 ${job.location} | 📌 ${job.source}</div>
+                        <a href="${job.url}" target="_blank" style="color: #667eea; text-decoration: none; margin-top: 8px; display: inline-block;">View Job →</a>
+                    `;
+                    container.appendChild(card);
+                });
+                
+                showStatus(`✓ Loaded ${jobs.length} total jobs`, 'success');
+            } catch (error) {
+                console.error('Failed to load jobs:', error);
+            }
+        }
+        
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = 'status ' + type;
+        }
+        
+        // Initialize
+        loadSources();
+        loadJobs();
+    </script>
+</body>
+</html>
